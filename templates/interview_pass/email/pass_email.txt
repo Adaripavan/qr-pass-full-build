@@ -1,0 +1,22 @@
+Hello {{ candidate.name }},
+
+Congratulations! You have been selected for an interview.
+
+Interview Details:
+Role: {{ candidate.role }}
+Date: {{ interview.date }}
+Time: {{ interview.time }}
+Location: {{ interview.location }}
+
+Please show the QR code attached to this email at the security desk when you arrive.
+
+Pass ID: {{ pass_id }}
+
+HR Contact:
+{{ interview.hr_name }}
+{{ interview.hr_contact }}
+
+Please keep the QR code available on your phone during your visit.
+
+Regards,
+HR Team

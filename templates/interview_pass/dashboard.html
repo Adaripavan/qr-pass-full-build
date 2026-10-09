@@ -1,0 +1,131 @@
+{% extends 'interview_pass/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Create Interview QR Passes</h2>
+    <div class="text-end">
+        <strong>HR Manager</strong><br>
+        <small class="text-muted">InterviewPass System</small>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card p-3">
+            <h3 class="mb-0">{{ total_candidates }}</h3>
+            <span class="text-muted">Total Candidates</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card p-3">
+            <h3 class="mb-0">{{ total_passes }}</h3>
+            <span class="text-muted">QR Passes</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card-success p-3">
+            <h3 class="mb-0">{{ emails_sent }}</h3>
+            <span class="text-muted">Emails Sent</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card-danger p-3">
+            <h3 class="mb-0">{{ emails_failed }}</h3>
+            <span class="text-muted">Failed / Pending</span>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Upload Form -->
+    <div class="col-md-5">
+        <div class="card p-4">
+            <h5 class="mb-3"><i class="bi bi-cloud-arrow-up text-primary"></i> Upload Candidate List</h5>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">HR & Interview Details</label>
+                    <div class="row g-2">
+                        <div class="col-md-6">{{ form.hr_name }}</div>
+                        <div class="col-md-6">{{ form.hr_contact }}</div>
+                        <div class="col-md-6">{{ form.date }}</div>
+                        <div class="col-md-6">{{ form.time }}</div>
+                        <div class="col-md-12">{{ form.location }}</div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-muted fw-bold">QR Single Candidate</label>
+                    <div class="row g-2">
+                        <div class="col-md-12">{{ form.candidate_name }}</div>
+                        <div class="col-md-6">{{ form.candidate_email }}</div>
+                        <div class="col-md-6">{{ form.candidate_role }}</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted fw-bold">OR Bulk Upload (CSV/Excel)</label>
+                    {{ form.candidate_file }}
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Generate & Send Passes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Recent Candidates -->
+    <div class="col-md-7">
+        <div class="card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Recent Candidates</h5>
+                <a href="{% url 'candidates_list' %}" class="text-decoration-none">View All &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pass in recent_passes %}
+                        <tr>
+                            <td>
+                                <strong>{{ pass.candidate.name }}</strong><br>
+                                <small class="text-muted">{{ pass.candidate.email }}</small>
+                            </td>
+                            <td>{{ pass.candidate.role }}</td>
+                            <td>
+                                {% if pass.email_status == 'SENT' %}
+                                <span class="badge bg-success rounded-pill">Sent</span>
+                                {% elif pass.email_status == 'FAILED' %}
+                                <span class="badge bg-danger rounded-pill">Failed</span>
+                                {% else %}
+                                <span class="badge bg-warning rounded-pill text-dark">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'candidate_detail' pass.id %}" class="btn btn-sm btn-outline-primary"
+                                    title="View"><i class="bi bi-eye"></i></a>
+                                <a href="{% url 'qr_pass_view' pass.id %}" class="btn btn-sm btn-outline-secondary"
+                                    target="_blank" title="View QR"><i class="bi bi-qr-code"></i></a>
+                                {% if pass.email_status != 'SENT' %}
+                                <a href="{% url 'resend_email' pass.id %}" class="btn btn-sm btn-outline-success"
+                                    title="Send Email"><i class="bi bi-envelope"></i></a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No candidates uploaded yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

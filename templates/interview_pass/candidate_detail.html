@@ -1,0 +1,55 @@
+{% extends 'interview_pass/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4>Candidate Details</h4>
+                <div>
+                    {% if prev_pass %}
+                        <a href="{% url 'candidate_detail' prev_pass.id %}" class="btn btn-outline-primary btn-sm">&larr; Previous</a>
+                    {% endif %}
+                    
+                    {% if next_pass %}
+                        <a href="{% url 'candidate_detail' next_pass.id %}" class="btn btn-outline-primary btn-sm">Next &rarr;</a>
+                    {% endif %}
+                    
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm ms-2">Back to List</a>
+                </div>
+            </div>
+            
+            <table class="table table-bordered">
+                <tr><th>Name</th><td>{{ interview_pass.candidate.name }}</td></tr>
+                <tr><th>Email</th><td>{{ interview_pass.candidate.email }}</td></tr>
+                <tr><th>Role</th><td>{{ interview_pass.candidate.role }}</td></tr>
+                <tr><th>Interview Date</th><td>{{ interview_pass.interview.date }}</td></tr>
+                <tr><th>Time</th><td>{{ interview_pass.interview.time }}</td></tr>
+                <tr><th>Location</th><td>{{ interview_pass.interview.location }}</td></tr>
+                <tr><th>HR Contact</th><td>{{ interview_pass.interview.hr_name }} ({{ interview_pass.interview.hr_contact }})</td></tr>
+            </table>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card p-4 text-center">
+            <h5>Interview Pass</h5>
+            <p class="text-muted">{{ interview_pass.pass_id }}</p>
+            {% if interview_pass.qr_image %}
+                <img src="{{ interview_pass.qr_image.url }}" alt="QR Code" class="img-fluid mb-3" style="max-width: 200px;">
+            {% endif %}
+            
+            <p>
+                Status: 
+                {% if interview_pass.status == 'VALID' %}
+                    <span class="badge bg-success">VALID</span>
+                {% else %}
+                    <span class="badge bg-secondary">{{ interview_pass.status }}</span>
+                {% endif %}
+            </p>
+            
+            <a href="{% url 'qr_pass_view' interview_pass.id %}" target="_blank" class="btn btn-primary w-100 mb-2">View Pass Fullscreen</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
